@@ -18,22 +18,23 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Preparar Android SDK
-  run: |
-    echo "sdk.dir=$ANDROID_HOME" > local.properties
-    export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
-    yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
-    "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
       - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Compilar APK
+      - name: Extrair projeto
         run: |
           unzip -o MiraPoolAndroid_projeto.zip -d projeto
           echo "sdk.dir=$ANDROID_HOME" > projeto/local.properties
+
+      - name: Compilar APK
+        run: |
           cd projeto
           gradle assembleDebug
 
@@ -42,4 +43,4 @@ jobs:
         with:
           name: MiraPool-APK
           path: projeto/app/build/outputs/apk/debug/app-debug.apk
-  
+          
