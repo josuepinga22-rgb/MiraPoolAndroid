@@ -19,10 +19,11 @@ jobs:
           java-version: '17'
 
       - name: Preparar Android SDK
-        run: |
-          echo "sdk.dir=$ANDROID_HOME" > local.properties
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+  run: |
+    echo "sdk.dir=$ANDROID_HOME" > local.properties
+    export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+    yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
+    "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
