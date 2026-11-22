@@ -1,3 +1,4 @@
+
 name: Gerar APK Mira Pool
 
 on:
@@ -15,14 +16,23 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: '17'
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Preparar Android SDK
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
       - name: Compilar APK
         run: |
           unzip -o MiraPoolAndroid_projeto.zip -d projeto
+          echo "sdk.dir=$ANDROID_HOME" > projeto/local.properties
           cd projeto
           gradle assembleDebug
 
@@ -31,3 +41,4 @@ jobs:
         with:
           name: MiraPool-APK
           path: projeto/app/build/outputs/apk/debug/app-debug.apk
+  
